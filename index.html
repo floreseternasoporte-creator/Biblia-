@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Biblia Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --coral: #CF5C36;
+    --coral-light: #F0997B;
+    --coral-pale: #FAECE7;
+    --coral-deep: #993C1D;
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #FAF9F7;
+    --bg-tertiary: #F1EFE8;
+    --text-primary: #1A1916;
+    --text-secondary: #5F5E5A;
+    --text-muted: #888780;
+    --border: rgba(0,0,0,0.10);
+    --border-strong: rgba(0,0,0,0.18);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-serif: 'EB Garamond', Georgia, serif;
+    --shadow-xs: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  [data-theme="dark"] {
+    --bg-primary: #1A1916;
+    --bg-secondary: #222220;
+    --bg-tertiary: #2C2C2A;
+    --text-primary: #F1EFE8;
+    --text-secondary: #B4B2A9;
+    --text-muted: #888780;
+    --border: rgba(255,255,255,0.08);
+    --border-strong: rgba(255,255,255,0.16);
+    --coral-pale: #3A1A0C;
+    --shadow-xs: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    height: 100%; width: 100%;
+    font-family: var(--font-sans);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  #app {
+    height: 100vh; height: 100dvh;
+    display: flex; flex-direction: column;
+    max-width: 430px; margin: 0 auto;
+    background: var(--bg-primary);
+    position: relative; overflow: hidden;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    display: flex; align-items: center;
+    padding: 12px 16px;
+    padding-top: calc(12px + var(--safe-top));
+    background: var(--bg-primary);
+    border-bottom: 0.5px solid var(--border);
+    gap: 8px;
+    min-height: 56px;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .topbar-logo {
+    width: 28px; height: 28px;
+    background: var(--coral);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .topbar-logo svg { width: 16px; height: 16px; fill: white; }
+  .topbar-title {
+    font-size: 16px; font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    flex: 1;
+  }
+  .topbar-actions { display: flex; gap: 4px; }
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    border: none; background: transparent;
+    color: var(--text-secondary);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 18px;
+    transition: background 0.15s;
+  }
+  .icon-btn:active { background: var(--bg-tertiary); }
+  .icon-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── SCREENS ── */
+  .screen {
+    flex: 1; overflow-y: auto; overflow-x: hidden;
+    display: none; flex-direction: column;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    padding-bottom: calc(80px + var(--safe-bottom));
+  }
+  .screen.active { display: flex; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    display: flex; align-items: center;
+    background: var(--bg-primary);
+    border-top: 0.5px solid var(--border);
+    padding: 8px 0;
+    padding-bottom: calc(8px + var(--safe-bottom));
+    flex-shrink: 0; z-index: 10;
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    padding: 6px 4px;
+    cursor: pointer; border: none; background: transparent;
+    color: var(--text-muted);
+    font-size: 10px; font-family: var(--font-sans);
+    font-weight: 500; letter-spacing: 0.02em;
+    transition: color 0.15s;
+  }
+  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-item.active { color: var(--coral); }
+  .nav-item.active svg { stroke-width: 2; }
+
+  /* ── HOME SCREEN ── */
+  .home-banner {
+    background: var(--coral-pale);
+    padding: 24px 20px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .home-eyebrow {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.06em;
+    color: var(--coral); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .daily-verse-ref {
+    font-size: 13px; font-weight: 500; color: var(--coral-deep);
+    margin-bottom: 10px;
+  }
+  .daily-verse-text {
+    font-family: var(--font-serif);
+    font-size: 19px; line-height: 1.55;
+    color: var(--text-primary);
+    font-style: italic;
+  }
+  .daily-verse-share {
+    margin-top: 14px;
+    display: flex; gap: 8px;
+  }
+  .pill-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px;
+    border-radius: 50px;
+    border: 0.5px solid var(--border-strong);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .pill-btn:active { background: var(--bg-tertiary); }
+  .pill-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--text-muted); text-transform: uppercase;
+    padding: 20px 20px 8px;
+  }
+  .home-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; padding: 0 16px 16px;
+  }
+  .home-card {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .home-card:active { background: var(--bg-tertiary); }
+  .home-card-icon {
+    width: 36px; height: 36px;
+    background: var(--coral-pale);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .home-card-icon svg { width: 18px; height: 18px; stroke: var(--coral); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .home-card-title { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .home-card-sub { font-size: 11px; color: var(--text-muted); }
+
+  .reading-plan-card {
+    margin: 0 16px 16px;
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .plan-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: var(--coral);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .plan-icon svg { width: 22px; height: 22px; stroke: white; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .plan-info { flex: 1; }
+  .plan-title { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
+  .plan-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .plan-bar { height: 3px; background: var(--border); border-radius: 99px; }
+  .plan-fill { height: 100%; background: var(--coral); border-radius: 99px; width: 23%; }
+  .chevron-right svg { width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── BOOKS SCREEN ── */
+  .testament-tabs {
+    display: flex;
+    padding: 12px 16px 0;
+    gap: 0;
+    border-bottom: 0.5px solid var(--border);
+    flex-shrink: 0;
+  }
+  .testament-tab {
+    flex: 1; padding: 10px 8px;
+    text-align: center;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer; border: none; background: transparent;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    margin-bottom: -0.5px;
+  }
+  .testament-tab.active { color: var(--coral); border-bottom-color: var(--coral); }
+
+  .books-list { padding: 8px 0; }
+  .book-item {
+    display: flex; align-items: center;
+    padding: 12px 20px;
+    cursor: pointer; gap: 14px;
+    border-bottom: 0.5px solid var(--border);
+    transition: background 0.12s;
+  }
+  .book-item:active { background: var(--bg-secondary); }
+  .book-abbr {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: var(--bg-tertiary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0; letter-spacing: -0.01em;
+  }
+  .book-info { flex: 1; }
+  .book-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .book-chapters { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .book-arrow svg { width: 14px; height: 14px; stroke: var(--border-strong); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ── CHAPTER SCREEN ── */
+  .chapters-header {
+    padding: 16px 20px 12px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .chapters-book-title {
+    font-size: 22px; font-weight: 500;
+    font-family: var(--font-serif);
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .chapters-meta { font-size: 12px; color: var(--text-muted); }
+  .chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    padding: 16px;
+  }
+  .chapter-btn {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    border: 0.5px solid var(--border);
+    background: var(--bg-secondary);
+    font-size: 13px; font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.12s;
+  }
+  .chapter-btn:active { background: var(--coral-pale); border-color: var(--coral); color: var(--coral); }
+  .chapter-btn.read { background: var(--coral-pale); border-color: transparent; color: var(--coral); }
+
+  /* ── READER SCREEN ── */
+  .reader-header {
+    display: flex; align-items: center;
+    padding: 10px 12px;
+    gap: 8px;
+    border-bottom: 0.5px solid var(--border);
+    flex-shrink: 0;
+  }
+  .reader-back {
+    width: 34px; height: 34px;
+    border-radius: 10px; border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+  }
+  .reader-back svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .reader-title-block { flex: 1; text-align: center; }
+  .reader-book { font-size: 15px; font-weight: 500; color: var(--text-primary); }
+  .reader-chapter { font-size: 12px; color: var(--text-muted); }
+  .reader-actions { display: flex; gap: 2px; }
+
+  .reader-content {
+    padding: 24px 20px 32px;
+    font-family: var(--font-serif);
+  }
+  .chapter-title {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--coral); text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .verse {
+    display: flex; gap: 10px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    padding: 4px 4px;
+    margin-left: -4px; margin-right: -4px;
+    transition: background 0.12s;
+    position: relative;
+  }
+  .verse:active { background: var(--bg-secondary); }
+  .verse.highlighted { background: var(--coral-pale); }
+  .verse-num {
+    font-size: 11px; font-weight: 600;
+    color: var(--coral);
+    min-width: 18px;
+    padding-top: 4px;
+    flex-shrink: 0;
+    font-family: var(--font-sans);
+  }
+  .verse-text {
+    font-size: 17px; line-height: 1.7;
+    color: var(--text-primary);
+    font-family: var(--font-serif);
+  }
+  .verse-actions {
+    display: none;
+    position: absolute;
+    top: -36px; right: 4px;
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-strong);
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+    box-shadow: var(--shadow-sm);
+    flex-direction: row;
+    z-index: 5;
+  }
+  .verse.active .verse-actions { display: flex; }
+  .verse-action-btn {
+    width: 30px; height: 30px;
+    border: none; background: transparent;
+    color: var(--text-secondary);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; border-radius: 8px;
+    font-size: 15px;
+    transition: background 0.12s, color 0.12s;
+  }
+  .verse-action-btn:hover { background: var(--bg-secondary); }
+  .verse-action-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .verse-action-btn.fav-active svg { stroke: #E74C3C; fill: #E74C3C; }
+
+  .reader-nav {
+    display: flex; gap: 10px;
+    padding: 0 16px 8px;
+    flex-shrink: 0;
+  }
+  .reader-nav-btn {
+    flex: 1; padding: 12px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--border-strong);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; display: flex;
+    align-items: center; justify-content: center; gap: 6px;
+    transition: background 0.12s;
+  }
+  .reader-nav-btn:active { background: var(--bg-tertiary); }
+  .reader-nav-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .reader-nav-btn.primary { background: var(--coral); color: white; border-color: var(--coral); }
+  .reader-nav-btn.primary:active { background: var(--coral-deep); }
+
+  /* Font size controls */
+  .font-controls {
+    display: flex; align-items: center; gap: 4px;
+    padding: 10px 16px 6px;
+    border-bottom: 0.5px solid var(--border);
+    flex-shrink: 0;
+    justify-content: flex-end;
+  }
+  .font-label { font-size: 11px; color: var(--text-muted); margin-right: 4px; }
+  .font-btn {
+    width: 28px; height: 28px;
+    border: 0.5px solid var(--border);
+    border-radius: 8px; background: transparent;
+    cursor: pointer; color: var(--text-secondary);
+    font-size: 13px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── SEARCH SCREEN ── */
+  .search-input-wrap {
+    padding: 12px 16px;
+    border-bottom: 0.5px solid var(--border);
+    flex-shrink: 0;
+  }
+  .search-input {
+    width: 100%;
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px 10px 38px;
+    font-size: 15px;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    outline: none;
+    transition: border-color 0.15s;
+    position: relative;
+  }
+  .search-input:focus { border-color: var(--coral); }
+  .search-input-wrapper { position: relative; }
+  .search-icon {
+    position: absolute; left: 12px; top: 50%;
+    transform: translateY(-50%);
+    width: 16px; height: 16px;
+    stroke: var(--text-muted); fill: none; stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  .search-hint {
+    padding: 24px 20px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+  .search-hint-icon { font-size: 36px; margin-bottom: 8px; }
+  .search-hint-title { font-size: 14px; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; }
+  .search-hint-sub { font-size: 12px; }
+
+  .search-results { padding: 8px 0; }
+  .search-result-item {
+    padding: 14px 20px;
+    border-bottom: 0.5px solid var(--border);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .search-result-item:active { background: var(--bg-secondary); }
+  .search-result-ref {
+    font-size: 11px; font-weight: 600; color: var(--coral);
+    letter-spacing: 0.04em; margin-bottom: 5px;
+  }
+  .search-result-text {
+    font-family: var(--font-serif);
+    font-size: 15px; line-height: 1.55;
+    color: var(--text-primary);
+  }
+  .search-result-text mark {
+    background: var(--coral-pale);
+    color: var(--coral-deep);
+    border-radius: 3px; padding: 0 2px;
+    font-style: normal;
+  }
+
+  /* ── FAVORITES SCREEN ── */
+  .empty-state {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 40px 32px;
+    text-align: center; gap: 12px;
+  }
+  .empty-icon {
+    width: 56px; height: 56px;
+    background: var(--bg-tertiary);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .empty-icon svg { width: 28px; height: 28px; stroke: var(--text-muted); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .empty-title { font-size: 16px; font-weight: 500; color: var(--text-primary); }
+  .empty-sub { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .empty-cta {
+    margin-top: 8px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: none;
+    background: var(--coral);
+    color: white;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+  }
+
+  .fav-item {
+    padding: 16px 20px;
+    border-bottom: 0.5px solid var(--border);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .fav-item:active { background: var(--bg-secondary); }
+  .fav-item-ref {
+    font-size: 11px; font-weight: 600; color: var(--coral);
+    letter-spacing: 0.04em; margin-bottom: 6px;
+  }
+  .fav-item-text {
+    font-family: var(--font-serif);
+    font-size: 15px; line-height: 1.55;
+    color: var(--text-primary);
+  }
+  .fav-item-actions {
+    margin-top: 10px; display: flex; gap: 8px;
+  }
+  .fav-del-btn {
+    padding: 5px 12px;
+    border-radius: 6px; border: 0.5px solid var(--border);
+    background: transparent; font-size: 11px;
+    color: var(--text-muted); cursor: pointer;
+  }
+
+  /* ── SETTINGS SCREEN ── */
+  .settings-section {
+    padding: 16px 0 0;
+  }
+  .settings-section-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    color: var(--text-muted); text-transform: uppercase;
+    padding: 0 20px 8px;
+  }
+  .settings-item {
+    display: flex; align-items: center;
+    padding: 14px 20px;
+    border-bottom: 0.5px solid var(--border);
+    gap: 14px;
+  }
+  .settings-item-icon {
+    width: 34px; height: 34px;
+    background: var(--bg-tertiary);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .settings-item-icon svg { width: 17px; height: 17px; stroke: var(--text-secondary); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .settings-item-info { flex: 1; }
+  .settings-item-label { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .settings-item-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .toggle {
+    width: 42px; height: 24px;
+    background: var(--border-strong);
+    border-radius: 50px; position: relative;
+    cursor: pointer; transition: background 0.2s;
+    flex-shrink: 0;
+    border: none;
+  }
+  .toggle.on { background: var(--coral); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    background: white; border-radius: 50%;
+    top: 3px; left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on::after { transform: translateX(18px); }
+
+  .font-size-selector {
+    display: flex; gap: 6px;
+    padding: 12px 20px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .font-size-option {
+    flex: 1; padding: 8px 4px;
+    border-radius: 8px;
+    border: 0.5px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: pointer; text-align: center;
+    font-family: var(--font-sans);
+    transition: all 0.12s;
+  }
+  .font-size-option.active {
+    border-color: var(--coral);
+    background: var(--coral-pale);
+    color: var(--coral);
+  }
+  .version-badge {
+    display: inline-block;
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 50px;
+    text-transform: uppercase;
+  }
+  .toast {
+    position: fixed; bottom: calc(90px + var(--safe-bottom));
+    left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--text-primary); color: var(--bg-primary);
+    font-size: 13px; font-weight: 500;
+    padding: 10px 18px; border-radius: 50px;
+    opacity: 0; transition: all 0.2s;
+    z-index: 100; white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* READER dynamic font size */
+  .reader-content[data-size="sm"] .verse-text { font-size: 15px; }
+  .reader-content[data-size="md"] .verse-text { font-size: 17px; }
+  .reader-content[data-size="lg"] .verse-text { font-size: 20px; }
+  .reader-content[data-size="xl"] .verse-text { font-size: 23px; }
+
+  /* Spinner */
+  .loading-spinner {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    padding: 40px;
+    color: var(--text-muted); font-size: 14px;
+  }
+
+  .search-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 12px 16px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .search-tag {
+    padding: 5px 12px;
+    border-radius: 50px;
+    border: 0.5px solid var(--border-strong);
+    background: var(--bg-secondary);
+    font-size: 12px; font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+  .search-tag:active { background: var(--coral-pale); color: var(--coral); border-color: var(--coral); }
+
+  .plan-day-item {
+    display: flex; align-items: center;
+    padding: 12px 20px;
+    border-bottom: 0.5px solid var(--border);
+    gap: 12px; cursor: pointer;
+  }
+  .plan-day-check {
+    width: 22px; height: 22px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .plan-day-check.done { background: var(--coral); border-color: var(--coral); }
+  .plan-day-check.done svg { display: block; }
+  .plan-day-check svg { display: none; width: 12px; height: 12px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  .plan-day-info { flex: 1; }
+  .plan-day-title { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .plan-day-verses { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+</style>
+</head>
+<body>
+<div id="app" data-theme="light">
+
+  <!-- ── TOP BAR ── -->
+  <div class="topbar" id="topbar">
+    <div class="topbar-logo">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L4 7v10l8 5 8-5V7z"/>
+      </svg>
+    </div>
+    <span class="topbar-title" id="topbar-title">Biblia Digital</span>
+    <div class="topbar-actions" id="topbar-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="Cambiar tema">
+        <svg id="theme-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── HOME ── -->
+  <div class="screen active" id="screen-home">
+    <div class="home-banner">
+      <div class="home-eyebrow">Versículo del día</div>
+      <div class="daily-verse-ref" id="daily-ref">Juan 3:16</div>
+      <div class="daily-verse-text" id="daily-verse">"Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree no se pierda, sino que tenga vida eterna."</div>
+      <div class="daily-verse-share">
+        <button class="pill-btn" onclick="shareDailyVerse()">
+          <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          Compartir
+        </button>
+        <button class="pill-btn" onclick="saveVerseToFavs('Juan', 3, 16, bibleData['Juan'][3][16])">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Guardar
+        </button>
+      </div>
+    </div>
+
+    <div class="section-label">Acceso rápido</div>
+    <div class="home-grid">
+      <div class="home-card" onclick="goToBooks()">
+        <div class="home-card-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+        <div class="home-card-title">Libros</div>
+        <div class="home-card-sub">66 libros</div>
+      </div>
+      <div class="home-card" onclick="goToSearch()">
+        <div class="home-card-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <div class="home-card-title">Buscar</div>
+        <div class="home-card-sub">Versículos</div>
+      </div>
+      <div class="home-card" onclick="goToFavs()">
+        <div class="home-card-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div class="home-card-title">Favoritos</div>
+        <div class="home-card-sub" id="fav-count-home">0 guardados</div>
+      </div>
+      <div class="home-card" onclick="goToSettings()">
+        <div class="home-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+        <div class="home-card-title">Ajustes</div>
+        <div class="home-card-sub">Personalizar</div>
+      </div>
+    </div>
+
+    <div class="section-label">Plan de lectura</div>
+    <div class="reading-plan-card" onclick="goToPlan()">
+      <div class="plan-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </div>
+      <div class="plan-info">
+        <div class="plan-title">Nuevo Testamento en 90 días</div>
+        <div class="plan-sub">Día 21 de 90 · Mateo 5</div>
+        <div class="plan-bar"><div class="plan-fill"></div></div>
+      </div>
+      <div class="chevron-right">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BOOKS ── -->
+  <div class="screen" id="screen-books">
+    <div class="testament-tabs" id="testament-tabs">
+      <button class="testament-tab active" onclick="selectTestament(0, this)">Antiguo Testamento</button>
+      <button class="testament-tab" onclick="selectTestament(1, this)">Nuevo Testamento</button>
+    </div>
+    <div id="books-list" class="books-list"></div>
+  </div>
+
+  <!-- ── CHAPTERS ── -->
+  <div class="screen" id="screen-chapters">
+    <div class="chapters-header">
+      <button style="background:none;border:none;color:var(--coral);font-size:13px;font-weight:500;cursor:pointer;padding:0 0 8px;display:flex;align-items:center;gap:4px;" onclick="backToBooks()">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>
+        Libros
+      </button>
+      <div class="chapters-book-title" id="chapters-book-title">Génesis</div>
+      <div class="chapters-meta" id="chapters-meta">50 capítulos</div>
+    </div>
+    <div class="chapters-grid" id="chapters-grid"></div>
+  </div>
+
+  <!-- ── READER ── -->
+  <div class="screen" id="screen-reader">
+    <div class="reader-header">
+      <button class="reader-back" id="reader-back-btn" onclick="backFromReader()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="reader-title-block">
+        <div class="reader-book" id="reader-book-title">Génesis</div>
+        <div class="reader-chapter" id="reader-chapter-sub">Capítulo 1</div>
+      </div>
+      <div class="reader-actions">
+        <button class="icon-btn" onclick="cycleFont()">
+          <svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        </button>
+        <button class="icon-btn" onclick="shareChapter()">
+          <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="reader-content" id="reader-content" data-size="md"></div>
+    <div class="reader-nav">
+      <button class="reader-nav-btn" id="reader-prev" onclick="prevChapter()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Anterior
+      </button>
+      <button class="reader-nav-btn primary" id="reader-next" onclick="nextChapter()">
+        Siguiente
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── SEARCH ── -->
+  <div class="screen" id="screen-search">
+    <div class="search-input-wrap">
+      <div class="search-input-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" class="search-input" id="search-input" placeholder="Buscar versículos..." oninput="handleSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+      </div>
+    </div>
+    <div class="search-tags" id="search-tags">
+      <span class="search-tag" onclick="quickSearch('amor')">amor</span>
+      <span class="search-tag" onclick="quickSearch('fe')">fe</span>
+      <span class="search-tag" onclick="quickSearch('esperanza')">esperanza</span>
+      <span class="search-tag" onclick="quickSearch('paz')">paz</span>
+      <span class="search-tag" onclick="quickSearch('luz')">luz</span>
+      <span class="search-tag" onclick="quickSearch('gracia')">gracia</span>
+      <span class="search-tag" onclick="quickSearch('vida')">vida</span>
+    </div>
+    <div id="search-results">
+      <div class="search-hint">
+        <div class="search-hint-icon">📖</div>
+        <div class="search-hint-title">Busca en toda la Biblia</div>
+        <div class="search-hint-sub">Escribe una palabra o frase</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FAVORITES ── -->
+  <div class="screen" id="screen-favs">
+    <div id="favs-list"></div>
+  </div>
+
+  <!-- ── SETTINGS ── -->
+  <div class="screen" id="screen-settings">
+    <div class="settings-section">
+      <div class="settings-section-title">Apariencia</div>
+      <div class="settings-item">
+        <div class="settings-item-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </div>
+        <div class="settings-item-info">
+          <div class="settings-item-label">Modo oscuro</div>
+          <div class="settings-item-sub">Más cómodo de noche</div>
+        </div>
+        <button class="toggle" id="dark-toggle" onclick="toggleThemeFromSettings(this)"></button>
+      </div>
+      <div class="settings-item" style="flex-direction:column;align-items:flex-start;gap:10px;">
+        <div style="display:flex;align-items:center;gap:14px;width:100%">
+          <div class="settings-item-icon"><svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></div>
+          <div class="settings-item-info">
+            <div class="settings-item-label">Tamaño de texto</div>
+            <div class="settings-item-sub">Para la lectura</div>
+          </div>
+        </div>
+        <div class="font-size-selector">
+          <button class="font-size-option" style="font-size:12px" onclick="setFontSize('sm',this)">Aa</button>
+          <button class="font-size-option active" style="font-size:14px" onclick="setFontSize('md',this)">Aa</button>
+          <button class="font-size-option" style="font-size:17px" onclick="setFontSize('lg',this)">Aa</button>
+          <button class="font-size-option" style="font-size:20px" onclick="setFontSize('xl',this)">Aa</button>
+        </div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Lectura</div>
+      <div class="settings-item">
+        <div class="settings-item-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="settings-item-info">
+          <div class="settings-item-label">Versículo del día</div>
+          <div class="settings-item-sub">Notificación diaria</div>
+        </div>
+        <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon"><svg viewBox="0 0 24 24"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg></div>
+        <div class="settings-item-info">
+          <div class="settings-item-label">Recordatorio</div>
+          <div class="settings-item-sub">Plan de lectura</div>
+        </div>
+        <button class="toggle" onclick="this.classList.toggle('on')"></button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Versión</div>
+      <div class="settings-item">
+        <div class="settings-item-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+        <div class="settings-item-info">
+          <div class="settings-item-label">Biblia Reina-Valera</div>
+          <div class="settings-item-sub">Versión activa</div>
+        </div>
+        <span class="version-badge">1960</span>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">Acerca de</div>
+      <div class="settings-item">
+        <div class="settings-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div class="settings-item-info">
+          <div class="settings-item-label">Biblia Digital</div>
+          <div class="settings-item-sub">Versión 1.0 · Powered by Anthropic</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PLAN SCREEN ── -->
+  <div class="screen" id="screen-plan">
+    <div style="padding:16px 20px 12px;border-bottom:0.5px solid var(--border);">
+      <button style="background:none;border:none;color:var(--coral);font-size:13px;font-weight:500;cursor:pointer;padding:0 0 8px;display:flex;align-items:center;gap:4px;" onclick="backToHome()">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="15 18 9 12 15 6"/></svg>
+        Inicio
+      </button>
+      <div style="font-family:var(--font-serif);font-size:22px;font-weight:500;color:var(--text-primary);margin-bottom:4px;">Nuevo Testamento</div>
+      <div style="font-size:12px;color:var(--text-muted);">Plan 90 días · Día 21 de 90</div>
+      <div style="margin-top:10px;height:4px;background:var(--border);border-radius:99px;"><div style="height:100%;width:23%;background:var(--coral);border-radius:99px;"></div></div>
+    </div>
+    <div id="plan-list"></div>
+  </div>
+
+  <!-- ── BOTTOM NAV ── -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-home" onclick="navigate('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Inicio
+    </button>
+    <button class="nav-item" id="nav-books" onclick="navigate('books')">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Biblia
+    </button>
+    <button class="nav-item" id="nav-search" onclick="navigate('search')">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Buscar
+    </button>
+    <button class="nav-item" id="nav-favs" onclick="navigate('favs')">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Favoritos
+    </button>
+    <button class="nav-item" id="nav-settings" onclick="navigate('settings')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Ajustes
+    </button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// BIBLE DATA (sample — RVR1960 style text)
+// ═══════════════════════════════════════════
+const bibleData = {
+  "Génesis": {
+    1: {
+      1: "En el principio creó Dios los cielos y la tierra.",
+      2: "Y la tierra estaba desordenada y vacía, y las tinieblas estaban sobre la faz del abismo, y el Espíritu de Dios se movía sobre la faz de las aguas.",
+      3: "Y dijo Dios: Sea la luz; y fue la luz.",
+      4: "Y vio Dios que la luz era buena; y separó Dios la luz de las tinieblas.",
+      5: "Y llamó Dios a la luz Día, y a las tinieblas llamó Noche. Y fue la tarde y la mañana un día.",
+      6: "Luego dijo Dios: Haya expansión en medio de las aguas, y separe las aguas de las aguas.",
+      7: "E hizo Dios la expansión, y separó las aguas que estaban debajo de la expansión, de las aguas que estaban sobre la expansión. Y fue así.",
+      8: "Y llamó Dios a la expansión Cielos. Y fue la tarde y la mañana el día segundo.",
+      9: "Dijo también Dios: Júntense las aguas que están debajo de los cielos en un lugar, y descúbrase lo seco. Y fue así.",
+      10: "Y llamó Dios a lo seco Tierra, y a la reunión de las aguas llamó Mares. Y vio Dios que era bueno.",
+      11: "Después dijo Dios: Produzca la tierra hierba verde, hierba que dé semilla; árbol de fruto que dé fruto según su género, que su semilla esté en él, sobre la tierra. Y fue así.",
+      12: "Produjo, pues, la tierra hierba verde, hierba que da semilla según su naturaleza, y árbol que da fruto, cuya semilla está en él, según su género. Y vio Dios que era bueno.",
+      13: "Y fue la tarde y la mañana el día tercero.",
+      14: "Dijo luego Dios: Haya lumbreras en la expansión de los cielos para separar el día de la noche; y sirvan de señales para las estaciones, para días y años.",
+      15: "Y sean por lumbreras en la expansión de los cielos para alumbrar sobre la tierra. Y fue así.",
+      16: "E hizo Dios las dos grandes lumbreras; la lumbrera mayor para que señorease en el día, y la lumbrera menor para que señorease en la noche; hizo también las estrellas.",
+      17: "Y las puso Dios en la expansión de los cielos para alumbrar sobre la tierra.",
+      18: "Y para señorear en el día y en la noche, y para separar la luz de las tinieblas. Y vio Dios que era bueno.",
+      19: "Y fue la tarde y la mañana el día cuarto.",
+      20: "Dijo Dios: Produzcan las aguas seres vivientes, y aves que vuelen sobre la tierra, en la abierta expansión de los cielos.",
+      21: "Y creó Dios los grandes monstruos marinos, y todo ser viviente que se mueve, que las aguas produjeron según su género, y toda ave alada según su especie. Y vio Dios que era bueno.",
+      22: "Y Dios los bendijo, diciendo: Fructificad y multiplicaos, y llenad las aguas en los mares, y multiplíquense las aves en la tierra.",
+      23: "Y fue la tarde y la mañana el día quinto.",
+      24: "Luego dijo Dios: Produzca la tierra seres vivientes según su género, bestias y serpientes y animales de la tierra según su especie. Y fue así.",
+      25: "E hizo Dios animales de la tierra según su género, y ganado según su género, y todo animal que se arrastra sobre la tierra según su especie. Y vio Dios que era bueno.",
+      26: "Entonces dijo Dios: Hagamos al hombre a nuestra imagen, conforme a nuestra semejanza; y señoree en los peces del mar, en las aves de los cielos, en las bestias, en toda la tierra, y en todo animal que se arrastra sobre la tierra.",
+      27: "Y creó Dios al hombre a su imagen, a imagen de Dios lo creó; varón y hembra los creó.",
+      28: "Y los bendijo Dios, y les dijo: Fructificad y multiplicaos; llenad la tierra, y sojuzgadla, y señoread en los peces del mar, en las aves de los cielos, y en todas las bestias que se mueven sobre la tierra.",
+      29: "Y dijo Dios: He aquí que os he dado toda planta que da semilla, que está sobre toda la tierra, y todo árbol en que hay fruto y que da semilla; os serán para comer.",
+      30: "Y a toda bestia de la tierra, y a todas las aves de los cielos, y a todo lo que se arrastra sobre la tierra, en que hay vida, toda planta verde les será para comer. Y fue así.",
+      31: "Y vio Dios todo lo que había hecho, y he aquí que era bueno en gran manera. Y fue la tarde y la mañana el día sexto."
+    },
+    2: {
+      1: "Fueron, pues, acabados los cielos y la tierra, y todo el ejército de ellos.",
+      2: "Y acabó Dios en el día séptimo la obra que hizo; y reposó el día séptimo de toda la obra que hizo.",
+      3: "Y bendijo Dios al día séptimo, y lo santificó, porque en él reposó de toda la obra que había hecho en la creación.",
+      4: "Estos son los orígenes de los cielos y de la tierra cuando fueron creados, el día que Jehová Dios hizo la tierra y los cielos.",
+      5: "Y toda planta del campo antes que fuese en la tierra, y toda hierba del campo antes que naciese; porque Jehová Dios aún no había hecho llover sobre la tierra, ni había hombre para que labrase la tierra.",
+      6: "Sino que subía de la tierra un vapor, el cual regaba toda la faz de la tierra.",
+      7: "Entonces Jehová Dios formó al hombre del polvo de la tierra, y sopló en su nariz aliento de vida, y fue el hombre un ser viviente.",
+      8: "Y Jehová Dios plantó un huerto en Edén, al oriente; y puso allí al hombre que había formado.",
+      9: "Y Jehová Dios hizo nacer de la tierra todo árbol delicioso a la vista, y bueno para comer; también el árbol de vida en medio del huerto, y el árbol de la ciencia del bien y del mal.",
+      10: "Y salía de Edén un río para regar el huerto, y de allí se repartía en cuatro brazos."
+    },
+    3: {
+      1: "Pero la serpiente era astuta, más que todos los animales del campo que Jehová Dios había hecho; la cual dijo a la mujer: ¿Conque Dios os ha dicho: No comeréis de todo árbol del huerto?",
+      2: "Y la mujer respondió a la serpiente: Del fruto de los árboles del huerto podemos comer;",
+      3: "pero del fruto del árbol que está en medio del huerto dijo Dios: No comeréis de él, ni le tocaréis, para que no muráis.",
+      4: "Entonces la serpiente dijo a la mujer: No moriréis;",
+      5: "sino que sabe Dios que el día que comáis de él, serán abiertos vuestros ojos, y seréis como Dios, sabiendo el bien y el mal."
+    }
+  },
+  "Salmos": {
+    23: {
+      1: "Jehová es mi pastor; nada me faltará.",
+      2: "En lugares de delicados pastos me hará descansar; junto a aguas de reposo me pastoreará.",
+      3: "Confortará mi alma; me guiará por sendas de justicia por amor de su nombre.",
+      4: "Aunque ande en valle de sombra de muerte, no temeré mal alguno, porque tú estarás conmigo; tu vara y tu cayado me infundirán aliento.",
+      5: "Aderezas mesa delante de mí en presencia de mis angustiadores; unges mi cabeza con aceite; mi copa está rebosando.",
+      6: "Ciertamente el bien y la misericordia me seguirán todos los días de mi vida, y en la casa de Jehová moraré por largos días."
+    },
+    91: {
+      1: "El que habita al abrigo del Altísimo morará bajo la sombra del Omnipotente.",
+      2: "Diré yo a Jehová: Esperanza mía, y castillo mío; mi Dios, en quien confiaré.",
+      3: "Él te librará del lazo del cazador, de la peste destructora.",
+      4: "Con sus plumas te cubrirá, y debajo de sus alas estarás seguro; escudo y adarga es su verdad.",
+      5: "No temerás el terror nocturno, ni saeta que vuele de día.",
+      6: "Ni pestilencia que ande en oscuridad, ni mortandad que en medio del día destruya.",
+      7: "Caerán a tu lado mil, y diez mil a tu diestra; mas a ti no llegará.",
+      8: "Ciertamente con tus ojos mirarás y verás la recompensa de los impíos.",
+      9: "Porque has puesto a Jehová, que es mi esperanza, al Altísimo por tu habitación.",
+      10: "No te sobrevendrá mal, ni plaga tocará tu morada.",
+      11: "Pues a sus ángeles mandará acerca de ti, que te guarden en todos tus caminos.",
+      12: "En las manos te llevarán, para que tu pie no tropiece en piedra.",
+      13: "Sobre el león y el áspid pisarás; hollarás al cachorro del león y al dragón.",
+      14: "Por cuanto en mí ha puesto su amor, yo también lo libraré; le pondré en alto, por cuanto ha conocido mi nombre.",
+      15: "Me invocará, y yo le responderé; con él estaré yo en la angustia; lo libraré y le glorificaré.",
+      16: "Lo saciaré de larga vida, y le mostraré mi salvación."
+    },
+    1: {
+      1: "Bienaventurado el varón que no anduvo en consejo de malos, ni estuvo en camino de pecadores, ni en silla de escarnecedores se ha sentado;",
+      2: "sino que en la ley de Jehová está su delicia, y en su ley medita de día y de noche.",
+      3: "Será como árbol plantado junto a corrientes de aguas, que da su fruto en su tiempo, y su hoja no cae; y todo lo que hace, prosperará.",
+      4: "No así los malos, que son como el tamo que arrebata el viento.",
+      5: "Por tanto, no se levantarán los malos en el juicio, ni los pecadores en la congregación de los justos.",
+      6: "Porque Jehová conoce el camino de los justos; mas la senda de los malos perecerá."
+    }
+  },
+  "Proverbios": {
+    3: {
+      1: "Hijo mío, no te olvides de mi ley, y tu corazón guarde mis mandamientos;",
+      2: "porque largura de días y años de vida y paz te aumentarán.",
+      3: "Nunca se aparten de ti la misericordia y la verdad; átalas a tu cuello, escríbelas en la tabla de tu corazón;",
+      4: "y hallarás gracia y buena opinión ante los ojos de Dios y de los hombres.",
+      5: "Fíate de Jehová de todo tu corazón, y no te apoyes en tu propia prudencia.",
+      6: "Reconócelo en todos tus caminos, y él enderezará tus veredas."
+    }
+  },
+  "Isaías": {
+    40: {
+      28: "¿No has sabido, no has oído que el Dios eterno es Jehová, el cual creó los confines de la tierra? No se cansa, ni se fatiga con cansancio, y su entendimiento no hay quien lo alcance.",
+      29: "Él da esfuerzo al cansado, y multiplica las fuerzas al que no tiene ningunas.",
+      30: "Los muchachos se fatigan y se cansan, los jóvenes flaquean y caen;",
+      31: "pero los que esperan a Jehová tendrán nuevas fuerzas; levantarán alas como las águilas; correrán, y no se cansarán; caminarán, y no se fatigarán."
+    }
+  },
+  "Juan": {
+    1: {
+      1: "En el principio era el Verbo, y el Verbo era con Dios, y el Verbo era Dios.",
+      2: "Este era en el principio con Dios.",
+      3: "Todas las cosas por él fueron hechas, y sin él nada de lo que ha sido hecho, fue hecho.",
+      4: "En él estaba la vida, y la vida era la luz de los hombres.",
+      5: "La luz en las tinieblas resplandece, y las tinieblas no prevalecieron contra ella.",
+      6: "Hubo un hombre enviado de Dios, el cual se llamaba Juan.",
+      7: "Este vino por testimonio, para que diese testimonio de la luz, a fin de que todos creyesen por él.",
+      8: "No era él la luz, sino para que diese testimonio de la luz.",
+      9: "Aquella luz verdadera, que alumbra a todo hombre, venía a este mundo.",
+      10: "En el mundo estaba, y el mundo por él fue hecho; pero el mundo no le conoció.",
+      11: "A lo suyo vino, y los suyos no le recibieron.",
+      12: "Mas a todos los que le recibieron, a los que creen en su nombre, les dio potestad de ser hechos hijos de Dios;",
+      13: "los cuales no son engendrados de sangre, ni de voluntad de carne, ni de voluntad de varón, sino de Dios.",
+      14: "Y aquel Verbo fue hecho carne, y habitó entre nosotros (y vimos su gloria, gloria como del unigénito del Padre), lleno de gracia y de verdad."
+    },
+    3: {
+      14: "Y como Moisés levantó la serpiente en el desierto, así es necesario que el Hijo del Hombre sea levantado,",
+      15: "para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.",
+      16: "Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.",
+      17: "Porque no envió Dios a su Hijo al mundo para condenar al mundo, sino para que el mundo sea salvo por él.",
+      18: "El que en él cree, no es condenado; pero el que no cree, ya ha sido condenado, porque no ha creído en el nombre del unigénito Hijo de Dios."
+    }
+  },
+  "Romanos": {
+    8: {
+      28: "Y sabemos que a los que aman a Dios, todas las cosas les ayudan a bien, esto es, a los que conforme a su propósito son llamados.",
+      31: "¿Qué, pues, diremos a esto? Si Dios es por nosotros, ¿quién contra nosotros?",
+      37: "Antes, en todas estas cosas somos más que vencedores por medio de aquel que nos amó.",
+      38: "Por lo cual estoy seguro de que ni la muerte, ni la vida, ni ángeles, ni principados, ni potestades, ni lo presente, ni lo por venir,",
+      39: "ni lo alto, ni lo profundo, ni ninguna otra cosa creada nos podrá separar del amor de Dios, que es en Cristo Jesús Señor nuestro."
+    }
+  },
+  "Filipenses": {
+    4: {
+      4: "Regocijaos en el Señor siempre. Otra vez digo: ¡Regocijaos!",
+      6: "Por nada estéis afanosos, sino sean conocidas vuestras peticiones delante de Dios en toda oración y ruego, con acción de gracias.",
+      7: "Y la paz de Dios, que sobrepasa todo entendimiento, guardará vuestros corazones y vuestros pensamientos en Cristo Jesús.",
+      13: "Todo lo puedo en Cristo que me fortalece."
+    }
+  },
+  "Mateo": {
+    5: {
+      1: "Viendo la multitud, subió al monte; y sentándose, vinieron a él sus discípulos.",
+      2: "Y abriendo su boca les enseñaba, diciendo:",
+      3: "Bienaventurados los pobres en espíritu, porque de ellos es el reino de los cielos.",
+      4: "Bienaventurados los que lloran, porque ellos recibirán consolación.",
+      5: "Bienaventurados los mansos, porque ellos recibirán la tierra por heredad.",
+      6: "Bienaventurados los que tienen hambre y sed de justicia, porque ellos serán saciados.",
+      7: "Bienaventurados los misericordiosos, porque ellos alcanzarán misericordia.",
+      8: "Bienaventurados los de limpio corazón, porque ellos verán a Dios.",
+      9: "Bienaventurados los pacificadores, porque ellos serán llamados hijos de Dios.",
+      10: "Bienaventurados los que padecen persecución por causa de la justicia, porque de ellos es el reino de los cielos.",
+      11: "Bienaventurados sois cuando por mi causa os vituperen y os persigan, y digan toda clase de mal contra vosotros, mintiendo.",
+      12: "Gozaos y alegraos, porque vuestro galardón es grande en los cielos; porque así persiguieron a los profetas que fueron antes de vosotros."
+    }
+  }
+};
+
+const OLD_TESTAMENT = [
+  { name: "Génesis", abbr: "Gén", chapters: 50 },
+  { name: "Éxodo", abbr: "Éxo", chapters: 40 },
+  { name: "Levítico", abbr: "Lev", chapters: 27 },
+  { name: "Números", abbr: "Núm", chapters: 36 },
+  { name: "Deuteronomio", abbr: "Deu", chapters: 34 },
+  { name: "Josué", abbr: "Jos", chapters: 24 },
+  { name: "Jueces", abbr: "Jue", chapters: 21 },
+  { name: "Rut", abbr: "Rut", chapters: 4 },
+  { name: "1 Samuel", abbr: "1Sa", chapters: 31 },
+  { name: "2 Samuel", abbr: "2Sa", chapters: 24 },
+  { name: "1 Reyes", abbr: "1Re", chapters: 22 },
+  { name: "2 Reyes", abbr: "2Re", chapters: 25 },
+  { name: "1 Crónicas", abbr: "1Cr", chapters: 29 },
+  { name: "2 Crónicas", abbr: "2Cr", chapters: 36 },
+  { name: "Esdras", abbr: "Esd", chapters: 10 },
+  { name: "Nehemías", abbr: "Neh", chapters: 13 },
+  { name: "Ester", abbr: "Est", chapters: 10 },
+  { name: "Job", abbr: "Job", chapters: 42 },
+  { name: "Salmos", abbr: "Sal", chapters: 150 },
+  { name: "Proverbios", abbr: "Pro", chapters: 31 },
+  { name: "Eclesiastés", abbr: "Ecl", chapters: 12 },
+  { name: "Cantares", abbr: "Can", chapters: 8 },
+  { name: "Isaías", abbr: "Isa", chapters: 66 },
+  { name: "Jeremías", abbr: "Jer", chapters: 52 },
+  { name: "Lamentaciones", abbr: "Lam", chapters: 5 },
+  { name: "Ezequiel", abbr: "Eze", chapters: 48 },
+  { name: "Daniel", abbr: "Dan", chapters: 12 },
+  { name: "Oseas", abbr: "Ose", chapters: 14 },
+  { name: "Joel", abbr: "Joe", chapters: 3 },
+  { name: "Amós", abbr: "Amó", chapters: 9 },
+  { name: "Abdías", abbr: "Abd", chapters: 1 },
+  { name: "Jonás", abbr: "Jon", chapters: 4 },
+  { name: "Miqueas", abbr: "Miq", chapters: 7 },
+  { name: "Nahúm", abbr: "Nah", chapters: 3 },
+  { name: "Habacuc", abbr: "Hab", chapters: 3 },
+  { name: "Sofonías", abbr: "Sof", chapters: 3 },
+  { name: "Hageo", abbr: "Hag", chapters: 2 },
+  { name: "Zacarías", abbr: "Zac", chapters: 14 },
+  { name: "Malaquías", abbr: "Mal", chapters: 4 }
+];
+
+const NEW_TESTAMENT = [
+  { name: "Mateo", abbr: "Mat", chapters: 28 },
+  { name: "Marcos", abbr: "Mar", chapters: 16 },
+  { name: "Lucas", abbr: "Luc", chapters: 24 },
+  { name: "Juan", abbr: "Jua", chapters: 21 },
+  { name: "Hechos", abbr: "Hch", chapters: 28 },
+  { name: "Romanos", abbr: "Rom", chapters: 16 },
+  { name: "1 Corintios", abbr: "1Co", chapters: 16 },
+  { name: "2 Corintios", abbr: "2Co", chapters: 13 },
+  { name: "Gálatas", abbr: "Gál", chapters: 6 },
+  { name: "Efesios", abbr: "Efe", chapters: 6 },
+  { name: "Filipenses", abbr: "Fil", chapters: 4 },
+  { name: "Colosenses", abbr: "Col", chapters: 4 },
+  { name: "1 Tesalonicenses", abbr: "1Ts", chapters: 5 },
+  { name: "2 Tesalonicenses", abbr: "2Ts", chapters: 3 },
+  { name: "1 Timoteo", abbr: "1Ti", chapters: 6 },
+  { name: "2 Timoteo", abbr: "2Ti", chapters: 4 },
+  { name: "Tito", abbr: "Tit", chapters: 3 },
+  { name: "Filemón", abbr: "Flm", chapters: 1 },
+  { name: "Hebreos", abbr: "Heb", chapters: 13 },
+  { name: "Santiago", abbr: "San", chapters: 5 },
+  { name: "1 Pedro", abbr: "1Pe", chapters: 5 },
+  { name: "2 Pedro", abbr: "2Pe", chapters: 3 },
+  { name: "1 Juan", abbr: "1Jn", chapters: 5 },
+  { name: "2 Juan", abbr: "2Jn", chapters: 1 },
+  { name: "3 Juan", abbr: "3Jn", chapters: 1 },
+  { name: "Judas", abbr: "Jud", chapters: 1 },
+  { name: "Apocalipsis", abbr: "Apo", chapters: 22 }
+];
+
+const PLAN_DAYS = [
+  { day: 1, title: "Introducción de Mateo", ref: "Mateo 1–2", done: true },
+  { day: 2, title: "El Bautismo y Tentación", ref: "Mateo 3–4", done: true },
+  { day: 3, title: "El Sermón del Monte I", ref: "Mateo 5–6", done: true },
+  { day: 4, title: "El Sermón del Monte II", ref: "Mateo 7–8", done: true },
+  { day: 5, title: "Milagros y Misión", ref: "Mateo 9–10", done: true },
+  { day: 6, title: "Juan y el Reino", ref: "Mateo 11–12", done: true },
+  { day: 7, title: "Parábolas del Reino", ref: "Mateo 13–14", done: true },
+  { day: 8, title: "Tradiciones y Fe", ref: "Mateo 15–16", done: true },
+  { day: 9, title: "La Transfiguración", ref: "Mateo 17–18", done: true },
+  { day: 10, title: "Controversias en Jerusalén", ref: "Mateo 19–20", done: true },
+  { day: 11, title: "La Entrada Triunfal", ref: "Mateo 21–22", done: true },
+  { day: 12, title: "Ayes y Profecías", ref: "Mateo 23–24", done: true },
+  { day: 13, title: "Parábolas finales", ref: "Mateo 25–26", done: true },
+  { day: 14, title: "La Crucifixión y Resurrección", ref: "Mateo 27–28", done: true },
+  { day: 15, title: "Marcos: El Mensajero", ref: "Marcos 1–3", done: true },
+  { day: 16, title: "Parábolas y Milagros", ref: "Marcos 4–6", done: true },
+  { day: 17, title: "Camino a Jerusalén", ref: "Marcos 7–9", done: true },
+  { day: 18, title: "Entrada en Jerusalén", ref: "Marcos 10–12", done: true },
+  { day: 19, title: "El Fin de los Tiempos", ref: "Marcos 13–14", done: true },
+  { day: 20, title: "La Cruz y la Gloria", ref: "Marcos 15–16", done: true },
+  { day: 21, title: "Lucas: El Nacimiento", ref: "Lucas 1–2", done: false },
+  { day: 22, title: "El Ministerio de Juan", ref: "Lucas 3–4", done: false },
+  { day: 23, title: "Llamado de Discípulos", ref: "Lucas 5–6", done: false },
+  { day: 24, title: "Milagros de Misericordia", ref: "Lucas 7–8", done: false },
+  { day: 25, title: "Identidad y Misión", ref: "Lucas 9–10", done: false },
+  { day: 26, title: "Enseñanzas sobre el Reino", ref: "Lucas 11–12", done: false },
+  { day: 27, title: "Parábolas de Gracia", ref: "Lucas 13–15", done: false },
+  { day: 28, title: "Mayordomía y Fe", ref: "Lucas 16–18", done: false },
+  { day: 29, title: "Hacia la Cruz", ref: "Lucas 19–21", done: false },
+  { day: 30, title: "Pasión y Resurrección", ref: "Lucas 22–24", done: false }
+];
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let currentScreen = 'home';
+let currentTestament = 0;
+let currentBook = null;
+let currentChapter = null;
+let fontSize = 'md';
+let favorites = JSON.parse(localStorage.getItem('bible_favs') || '[]');
+let highlighted = JSON.parse(localStorage.getItem('bible_highlighted') || '[]');
+let activeVerse = null;
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function navigate(screen) {
+  if (currentScreen === screen) return;
+  currentScreen = screen;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  if (screen === 'home') {
+    document.getElementById('screen-home').classList.add('active');
+    document.getElementById('nav-home').classList.add('active');
+    document.getElementById('topbar-title').textContent = 'Biblia Digital';
+    updateFavCountHome();
+  } else if (screen === 'books') {
+    document.getElementById('screen-books').classList.add('active');
+    document.getElementById('nav-books').classList.add('active');
+    document.getElementById('topbar-title').textContent = 'Biblia';
+    renderBooks();
+  } else if (screen === 'search') {
+    document.getElementById('screen-search').classList.add('active');
+    document.getElementById('nav-search').classList.add('active');
+    document.getElementById('topbar-title').textContent = 'Buscar';
+    setTimeout(() => document.getElementById('search-input').focus(), 100);
+  } else if (screen === 'favs') {
+    document.getElementById('screen-favs').classList.add('active');
+    document.getElementById('nav-favs').classList.add('active');
+    document.getElementById('topbar-title').textContent = 'Favoritos';
+    renderFavs();
+  } else if (screen === 'settings') {
+    document.getElementById('screen-settings').classList.add('active');
+    document.getElementById('nav-settings').classList.add('active');
+    document.getElementById('topbar-title').textContent = 'Ajustes';
+  }
+}
+
+function goToBooks() { navigate('books'); }
+function goToSearch() { navigate('search'); }
+function goToFavs() { navigate('favs'); }
+function goToSettings() { navigate('settings'); }
+
+function goToPlan() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-plan').classList.add('active');
+  document.getElementById('topbar-title').textContent = 'Plan de lectura';
+  renderPlan();
+}
+function backToHome() { navigate('home'); }
+
+// ═══════════════════════════════════════════
+// TESTAMENT & BOOKS
+// ═══════════════════════════════════════════
+function selectTestament(idx, el) {
+  currentTestament = idx;
+  document.querySelectorAll('.testament-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderBooks();
+}
+
+function renderBooks() {
+  const list = document.getElementById('books-list');
+  const books = currentTestament === 0 ? OLD_TESTAMENT : NEW_TESTAMENT;
+  list.innerHTML = books.map(b => `
+    <div class="book-item" onclick="openBook('${b.name}', ${b.chapters})">
+      <div class="book-abbr">${b.abbr}</div>
+      <div class="book-info">
+        <div class="book-name">${b.name}</div>
+        <div class="book-chapters">${b.chapters} capítulo${b.chapters > 1 ? 's' : ''}</div>
+      </div>
+      <div class="book-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════
+// CHAPTERS
+// ═══════════════════════════════════════════
+function openBook(bookName, numChapters) {
+  currentBook = bookName;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-chapters').classList.add('active');
+  document.getElementById('chapters-book-title').textContent = bookName;
+  document.getElementById('chapters-meta').textContent = `${numChapters} capítulo${numChapters > 1 ? 's' : ''}`;
+  document.getElementById('topbar-title').textContent = bookName;
+  const grid = document.getElementById('chapters-grid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= numChapters; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'chapter-btn';
+    btn.textContent = i;
+    btn.onclick = () => openChapter(bookName, i, numChapters);
+    grid.appendChild(btn);
+  }
+}
+
+function backToBooks() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-books').classList.add('active');
+  document.getElementById('topbar-title').textContent = 'Biblia';
+}
+
+// ═══════════════════════════════════════════
+// READER
+// ═══════════════════════════════════════════
+let totalChapters = 0;
+function openChapter(bookName, chapter, total) {
+  currentBook = bookName;
+  currentChapter = chapter;
+  totalChapters = total || (OLD_TESTAMENT.find(b=>b.name===bookName)||NEW_TESTAMENT.find(b=>b.name===bookName)||{chapters:1}).chapters;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-reader').classList.add('active');
+  document.getElementById('reader-book-title').textContent = bookName;
+  document.getElementById('reader-chapter-sub').textContent = `Capítulo ${chapter}`;
+  document.getElementById('topbar-title').textContent = `${bookName} ${chapter}`;
+  renderChapter(bookName, chapter);
+  document.getElementById('screen-reader').scrollTop = 0;
+}
+
+function renderChapter(bookName, chapter) {
+  const content = document.getElementById('reader-content');
+  content.setAttribute('data-size', fontSize);
+  const chapterData = bibleData[bookName] && bibleData[bookName][chapter];
+
+  if (!chapterData) {
+    content.innerHTML = `
+      <div class="chapter-title">${bookName} · Capítulo ${chapter}</div>
+      <div style="padding:20px 0;color:var(--text-muted);font-family:var(--font-sans);font-size:14px;line-height:1.6;">
+        <p>Este capítulo no está disponible en la versión de muestra.</p>
+        <p style="margin-top:12px;">La aplicación incluye contenido completo de: Génesis 1–3, Salmos 1, 23, 91, Proverbios 3, Isaías 40, Juan 1, 3, Romanos 8, Filipenses 4, Mateo 5.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const verses = Object.entries(chapterData);
+  const isFavMap = {};
+  favorites.forEach(f => { if(f.book===bookName&&f.chapter===chapter) isFavMap[f.verse]=true; });
+  const highlightMap = {};
+  highlighted.forEach(h => { if(h.book===bookName&&h.chapter===chapter) highlightMap[h.verse]=true; });
+
+  content.innerHTML = `
+    <div class="chapter-title">${bookName} · Capítulo ${chapter}</div>
+    ${verses.map(([v, text]) => `
+      <div class="verse ${highlightMap[v]?'highlighted':''}" id="verse-${v}" onclick="toggleVerseMenu(${v}, '${bookName}', ${chapter}, event)">
+        <div class="verse-actions">
+          <button class="verse-action-btn ${isFavMap[v]?'fav-active':''}" onclick="event.stopPropagation();toggleFavVerse('${bookName}', ${chapter}, ${v}, \`${text.replace(/`/g,"'")}\`, this)" title="Favorito">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+          <button class="verse-action-btn" onclick="event.stopPropagation();highlightVerse('${bookName}', ${chapter}, ${v})" title="Subrayar">
+            <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+          <button class="verse-action-btn" onclick="event.stopPropagation();copyVerse('${bookName}', ${chapter}, ${v}, \`${text.replace(/`/g,"'")}\`)" title="Copiar">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+        <div class="verse-num">${v}</div>
+        <div class="verse-text">${text}</div>
+      </div>
+    `).join('')}
+  `;
+  updateNavButtons();
+}
+
+function toggleVerseMenu(v, book, chapter, e) {
+  e.stopPropagation();
+  const verseEl = document.getElementById('verse-' + v);
+  if (activeVerse && activeVerse !== verseEl) activeVerse.classList.remove('active');
+  verseEl.classList.toggle('active');
+  activeVerse = verseEl.classList.contains('active') ? verseEl : null;
+}
+
+document.addEventListener('click', () => {
+  if (activeVerse) { activeVerse.classList.remove('active'); activeVerse = null; }
+});
+
+function toggleFavVerse(book, chapter, verse, text, btn) {
+  const key = `${book}-${chapter}-${verse}`;
+  const idx = favorites.findIndex(f => f.book===book&&f.chapter===chapter&&f.verse==verse);
+  if (idx >= 0) {
+    favorites.splice(idx, 1);
+    btn.classList.remove('fav-active');
+    showToast('Eliminado de favoritos');
+  } else {
+    favorites.push({ book, chapter, verse, text });
+    btn.classList.add('fav-active');
+    showToast('Añadido a favoritos ❤️');
+  }
+  localStorage.setItem('bible_favs', JSON.stringify(favorites));
+  updateFavCountHome();
+}
+
+function highlightVerse(book, chapter, verse) {
+  const verseEl = document.getElementById('verse-' + verse);
+  const key = `${book}-${chapter}-${verse}`;
+  const idx = highlighted.findIndex(h => h.book===book&&h.chapter===chapter&&h.verse==verse);
+  if (idx >= 0) {
+    highlighted.splice(idx, 1);
+    verseEl.classList.remove('highlighted');
+    showToast('Subrayado eliminado');
+  } else {
+    highlighted.push({ book, chapter, verse });
+    verseEl.classList.add('highlighted');
+    showToast('Versículo subrayado');
+  }
+  localStorage.setItem('bible_highlighted', JSON.stringify(highlighted));
+  if (activeVerse) { activeVerse.classList.remove('active'); activeVerse = null; }
+}
+
+function copyVerse(book, chapter, verse, text) {
+  const full = `${text} — ${book} ${chapter}:${verse}`;
+  if (navigator.clipboard) navigator.clipboard.writeText(full);
+  showToast('Copiado al portapapeles');
+  if (activeVerse) { activeVerse.classList.remove('active'); activeVerse = null; }
+}
+
+function updateNavButtons() {
+  document.getElementById('reader-prev').disabled = currentChapter <= 1;
+  document.getElementById('reader-next').disabled = currentChapter >= totalChapters;
+  document.getElementById('reader-prev').style.opacity = currentChapter <= 1 ? '0.4' : '1';
+  document.getElementById('reader-next').style.opacity = currentChapter >= totalChapters ? '0.4' : '1';
+}
+
+function prevChapter() {
+  if (currentChapter > 1) openChapter(currentBook, currentChapter - 1, totalChapters);
+}
+function nextChapter() {
+  if (currentChapter < totalChapters) openChapter(currentBook, currentChapter + 1, totalChapters);
+}
+function backFromReader() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-chapters').classList.add('active');
+  document.getElementById('topbar-title').textContent = currentBook;
+}
+
+// ═══════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════
+let searchTimeout;
+function handleSearch(val) {
+  clearTimeout(searchTimeout);
+  if (!val.trim()) {
+    document.getElementById('search-results').innerHTML = `<div class="search-hint"><div class="search-hint-icon">📖</div><div class="search-hint-title">Busca en toda la Biblia</div><div class="search-hint-sub">Escribe una palabra o frase</div></div>`;
+    return;
+  }
+  searchTimeout = setTimeout(() => doSearch(val), 300);
+}
+
+function quickSearch(term) {
+  document.getElementById('search-input').value = term;
+  doSearch(term);
+}
+
+function doSearch(query) {
+  const q = query.toLowerCase().trim();
+  const results = [];
+  Object.entries(bibleData).forEach(([book, chapters]) => {
+    Object.entries(chapters).forEach(([ch, verses]) => {
+      Object.entries(verses).forEach(([v, text]) => {
+        if (text.toLowerCase().includes(q)) {
+          results.push({ book, chapter: parseInt(ch), verse: parseInt(v), text });
+        }
+      });
+    });
+  });
+  const el = document.getElementById('search-results');
+  if (!results.length) {
+    el.innerHTML = `<div class="search-hint"><div class="search-hint-icon">🔍</div><div class="search-hint-title">Sin resultados</div><div class="search-hint-sub">Intenta con otra palabra</div></div>`;
+    return;
+  }
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  el.innerHTML = `
+    <div style="padding:10px 20px 4px;font-size:12px;color:var(--text-muted);">${results.length} resultado${results.length>1?'s':''}</div>
+    <div class="search-results">
+      ${results.map(r => `
+        <div class="search-result-item" onclick="openChapter('${r.book}', ${r.chapter}, 0)">
+          <div class="search-result-ref">${r.book} ${r.chapter}:${r.verse}</div>
+          <div class="search-result-text">${r.text.replace(re, '<mark>$1</mark>')}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════
+// FAVORITES
+// ═══════════════════════════════════════════
+function saveVerseToFavs(book, chapter, verse, text) {
+  const idx = favorites.findIndex(f => f.book===book&&f.chapter===chapter&&f.verse==verse);
+  if (idx < 0) {
+    favorites.push({ book, chapter, verse, text });
+    localStorage.setItem('bible_favs', JSON.stringify(favorites));
+    showToast('Guardado en favoritos ❤️');
+    updateFavCountHome();
+  } else { showToast('Ya está en favoritos'); }
+}
+
+function renderFavs() {
+  const el = document.getElementById('favs-list');
+  if (!favorites.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <div class="empty-title">Sin favoritos</div>
+      <div class="empty-sub">Toca el corazón en cualquier versículo para guardarlo aquí.</div>
+      <button class="empty-cta" onclick="navigate('books')">Explorar la Biblia</button>
+    </div>`;
+    return;
+  }
+  el.innerHTML = favorites.map((f, i) => `
+    <div class="fav-item" onclick="openChapter('${f.book}', ${f.chapter}, 0)">
+      <div class="fav-item-ref">${f.book} ${f.chapter}:${f.verse}</div>
+      <div class="fav-item-text">${f.text}</div>
+      <div class="fav-item-actions">
+        <button class="fav-del-btn" onclick="event.stopPropagation();removeFav(${i})">Eliminar</button>
+        <button class="fav-del-btn" onclick="event.stopPropagation();copyVerse('${f.book}',${f.chapter},${f.verse},'${f.text.replace(/'/g,"\\'")}')">Copiar</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function removeFav(idx) {
+  favorites.splice(idx, 1);
+  localStorage.setItem('bible_favs', JSON.stringify(favorites));
+  renderFavs();
+  updateFavCountHome();
+  showToast('Eliminado');
+}
+
+function updateFavCountHome() {
+  const el = document.getElementById('fav-count-home');
+  if (el) el.textContent = `${favorites.length} guardado${favorites.length !== 1 ? 's' : ''}`;
+}
+
+// ═══════════════════════════════════════════
+// PLAN
+// ═══════════════════════════════════════════
+function renderPlan() {
+  const el = document.getElementById('plan-list');
+  el.innerHTML = PLAN_DAYS.map(d => `
+    <div class="plan-day-item" onclick="${d.done?'':''} openPlanDay(${d.day})">
+      <div class="plan-day-check ${d.done?'done':''}">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="plan-day-info">
+        <div class="plan-day-title">Día ${d.day}: ${d.title}</div>
+        <div class="plan-day-verses">${d.ref}</div>
+      </div>
+      <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--border-strong);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  `).join('');
+}
+
+function openPlanDay(day) { showToast(`Día ${day} del plan`); }
+
+// ═══════════════════════════════════════════
+// THEME & SETTINGS
+// ═══════════════════════════════════════════
+function toggleTheme() {
+  const app = document.getElementById('app');
+  const isDark = app.getAttribute('data-theme') === 'dark';
+  app.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  const toggle = document.getElementById('dark-toggle');
+  if (toggle) toggle.classList.toggle('on', !isDark);
+}
+
+function toggleThemeFromSettings(btn) {
+  btn.classList.toggle('on');
+  const app = document.getElementById('app');
+  app.setAttribute('data-theme', btn.classList.contains('on') ? 'dark' : 'light');
+}
+
+function setFontSize(size, el) {
+  fontSize = size;
+  document.querySelectorAll('.font-size-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  const content = document.getElementById('reader-content');
+  if (content) content.setAttribute('data-size', size);
+}
+
+const fontSizes = ['sm','md','lg','xl'];
+function cycleFont() {
+  const idx = fontSizes.indexOf(fontSize);
+  fontSize = fontSizes[(idx+1) % fontSizes.length];
+  const content = document.getElementById('reader-content');
+  if (content) content.setAttribute('data-size', fontSize);
+  showToast(`Texto: ${fontSize==='sm'?'pequeño':fontSize==='md'?'normal':fontSize==='lg'?'grande':'extra grande'}`);
+}
+
+// ═══════════════════════════════════════════
+// SHARE & COPY
+// ═══════════════════════════════════════════
+function shareDailyVerse() {
+  const text = document.getElementById('daily-verse').textContent + ' — ' + document.getElementById('daily-ref').textContent;
+  if (navigator.share) {
+    navigator.share({ text, title: 'Versículo del día' });
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+    showToast('Copiado al portapapeles');
+  }
+}
+
+function shareChapter() {
+  const msg = `${currentBook} ${currentChapter} — Biblia Digital`;
+  if (navigator.share) navigator.share({ title: msg, text: msg });
+  else showToast('Comparte: ' + msg);
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+updateFavCountHome();
+</script>
+</body>
+</html>
