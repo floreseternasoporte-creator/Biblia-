@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Biblia Digital</title>
+<title>Kor Bible</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -121,15 +121,16 @@
   }
   .nav-item {
     flex: 1; display: flex; flex-direction: column;
-    align-items: center; gap: 4px;
-    padding: 6px 4px;
+    align-items: center; gap: 3px;
+    padding: 6px 2px;
     cursor: pointer; border: none; background: transparent;
     color: var(--text-muted);
-    font-size: 10px; font-family: var(--font-sans);
-    font-weight: 500; letter-spacing: 0.02em;
+    font-size: 9.5px; font-family: var(--font-sans);
+    font-weight: 500; letter-spacing: 0.01em;
     transition: color 0.15s;
+    white-space: nowrap;
   }
-  .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
   .nav-item.active { color: var(--coral); }
   .nav-item.active svg { stroke-width: 2; }
 
@@ -652,6 +653,7 @@
     cursor: pointer;
   }
   .search-tag:active { background: var(--coral-pale); color: var(--coral); border-color: var(--coral); }
+  .search-tag.tag-active { background: var(--coral-pale); color: var(--coral); border-color: var(--coral); }
 
   .plan-day-item {
     display: flex; align-items: center;
@@ -673,6 +675,145 @@
   .plan-day-title { font-size: 13px; font-weight: 500; color: var(--text-primary); }
   .plan-day-verses { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
 
+  /* ── MEDIA SCREEN (AUDIO & VIDEO) ── */
+  .media-tabs {
+    display: flex;
+    padding: 12px 16px 0;
+    gap: 0;
+    border-bottom: 0.5px solid var(--border);
+    flex-shrink: 0;
+  }
+  .media-tab {
+    flex: 1; padding: 10px 8px;
+    text-align: center;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer; border: none; background: transparent;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    margin-bottom: -0.5px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .media-tab svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .media-tab.active { color: var(--coral); border-bottom-color: var(--coral); }
+
+  .media-panel { display: flex; flex-direction: column; }
+  .media-search-wrap { padding: 14px 16px 0; }
+
+  .video-list {
+    display: flex; flex-direction: column;
+    gap: 12px; padding: 8px 16px 16px;
+  }
+  .video-card {
+    background: var(--bg-secondary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .video-card:active { background: var(--bg-tertiary); }
+  .video-thumb {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--bg-tertiary);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .video-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .video-play-badge {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.18);
+  }
+  .video-play-badge svg {
+    width: 46px; height: 46px;
+    fill: rgba(255,255,255,0.92); stroke: none;
+    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.4));
+  }
+  .video-info { padding: 12px 14px; }
+  .video-title { font-size: 13.5px; font-weight: 500; color: var(--text-primary); line-height: 1.4; margin-bottom: 4px; }
+  .video-channel { font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+  .video-channel svg { width: 12px; height: 12px; stroke: var(--coral); fill: none; stroke-width: 2; }
+
+  .video-embed-wrap {
+    padding: 16px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .video-embed-frame {
+    width: 100%; aspect-ratio: 16/9;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 0.5px solid var(--border);
+    background: #000;
+  }
+  .video-embed-frame iframe { width: 100%; height: 100%; border: none; display: block; }
+  .video-embed-title { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-top: 10px; }
+  .video-embed-close {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 12px; color: var(--coral); font-weight: 500;
+    margin-top: 10px; cursor: pointer; background: none; border: none;
+    padding: 0;
+  }
+
+  .audio-list { display: flex; flex-direction: column; padding: 0 0 8px; }
+  .audio-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 20px;
+    border-bottom: 0.5px solid var(--border);
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .audio-item:active { background: var(--bg-secondary); }
+  .audio-item-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: var(--coral-pale);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .audio-item-icon.playing { background: var(--coral); }
+  .audio-item-icon svg { width: 18px; height: 18px; stroke: var(--coral); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .audio-item-icon.playing svg { stroke: white; }
+  .audio-item-info { flex: 1; }
+  .audio-item-title { font-size: 13.5px; font-weight: 500; color: var(--text-primary); }
+  .audio-item-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 1px; }
+  .audio-item-dur { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+
+  .mini-player {
+    position: fixed;
+    left: 50%; transform: translateX(-50%);
+    bottom: calc(64px + var(--safe-bottom));
+    width: min(398px, calc(100% - 16px));
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    display: none;
+    align-items: center; gap: 10px;
+    padding: 8px 10px;
+    z-index: 50;
+  }
+  .mini-player.show { display: flex; }
+  .mini-player-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: var(--coral);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .mini-player-icon svg { width: 16px; height: 16px; stroke: white; fill: white; }
+  .mini-player-info { flex: 1; min-width: 0; }
+  .mini-player-title { font-size: 12.5px; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini-player-sub { font-size: 10.5px; color: var(--text-muted); }
+  .mini-player-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: none; background: var(--bg-tertiary);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    color: var(--text-secondary);
+  }
+  .mini-player-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
 </style>
 </head>
 <body>
@@ -685,7 +826,7 @@
         <path d="M12 2L4 7v10l8 5 8-5V7z"/>
       </svg>
     </div>
-    <span class="topbar-title" id="topbar-title">Biblia Digital</span>
+    <span class="topbar-title" id="topbar-title">Kor Bible</span>
     <div class="topbar-actions" id="topbar-actions">
       <button class="icon-btn" onclick="toggleTheme()" title="Cambiar tema">
         <svg id="theme-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -704,9 +845,13 @@
           <svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
           Compartir
         </button>
-        <button class="pill-btn" onclick="saveVerseToFavs('Juan', 3, 16, bibleData['Juan'][3][16])">
+        <button class="pill-btn" onclick="saveDailyVerseToFavs()">
           <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           Guardar
+        </button>
+        <button class="pill-btn" onclick="randomVerse()">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Otro versículo
         </button>
       </div>
     </div>
@@ -727,6 +872,11 @@
         <div class="home-card-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
         <div class="home-card-title">Favoritos</div>
         <div class="home-card-sub" id="fav-count-home">0 guardados</div>
+      </div>
+      <div class="home-card" onclick="goToMedia()">
+        <div class="home-card-icon"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></div>
+        <div class="home-card-title">Media</div>
+        <div class="home-card-sub">Audio y video</div>
       </div>
       <div class="home-card" onclick="goToSettings()">
         <div class="home-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
@@ -814,13 +964,13 @@
       </div>
     </div>
     <div class="search-tags" id="search-tags">
-      <span class="search-tag" onclick="quickSearch('amor')">amor</span>
-      <span class="search-tag" onclick="quickSearch('fe')">fe</span>
-      <span class="search-tag" onclick="quickSearch('esperanza')">esperanza</span>
-      <span class="search-tag" onclick="quickSearch('paz')">paz</span>
-      <span class="search-tag" onclick="quickSearch('luz')">luz</span>
-      <span class="search-tag" onclick="quickSearch('gracia')">gracia</span>
-      <span class="search-tag" onclick="quickSearch('vida')">vida</span>
+      <span class="search-tag" onclick="quickSearch('amor', this)">amor</span>
+      <span class="search-tag" onclick="quickSearch('fe', this)">fe</span>
+      <span class="search-tag" onclick="quickSearch('esperanza', this)">esperanza</span>
+      <span class="search-tag" onclick="quickSearch('paz', this)">paz</span>
+      <span class="search-tag" onclick="quickSearch('luz', this)">luz</span>
+      <span class="search-tag" onclick="quickSearch('gracia', this)">gracia</span>
+      <span class="search-tag" onclick="quickSearch('vida', this)">vida</span>
     </div>
     <div id="search-results">
       <div class="search-hint">
@@ -834,6 +984,45 @@
   <!-- ── FAVORITES ── -->
   <div class="screen" id="screen-favs">
     <div id="favs-list"></div>
+  </div>
+
+  <!-- ── MEDIA (AUDIO & VIDEO) ── -->
+  <div class="screen" id="screen-media">
+    <div class="media-tabs" id="media-tabs">
+      <button class="media-tab active" onclick="selectMediaTab('videos', this)">
+        <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        Videos
+      </button>
+      <button class="media-tab" onclick="selectMediaTab('audio', this)">
+        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Audio
+      </button>
+    </div>
+
+    <div id="media-videos" class="media-panel">
+      <div class="media-search-wrap">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" class="search-input" id="video-search-input" placeholder="Buscar videos cristianos en YouTube..." autocomplete="off" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')searchYouTube(this.value)">
+        </div>
+      </div>
+      <div class="search-tags">
+        <span class="search-tag" onclick="quickVideoSearch('alabanza cristiana')">Alabanza</span>
+        <span class="search-tag" onclick="quickVideoSearch('prédica cristiana')">Prédicas</span>
+        <span class="search-tag" onclick="quickVideoSearch('estudio biblico')">Estudio bíblico</span>
+        <span class="search-tag" onclick="quickVideoSearch('iglesia en vivo')">Iglesias en vivo</span>
+        <span class="search-tag" onclick="quickVideoSearch('testimonios cristianos')">Testimonios</span>
+      </div>
+      <div class="section-label" style="padding-top:12px">Canales y playlists recomendadas</div>
+      <div id="video-list" class="video-list"></div>
+    </div>
+
+    <div id="media-audio" class="media-panel" style="display:none">
+      <div class="section-label" style="padding-top:16px">Audio Biblia</div>
+      <div class="audio-list" id="audio-bible-list"></div>
+      <div class="section-label">Música y prédicas en audio</div>
+      <div class="audio-list" id="audio-podcast-list"></div>
+    </div>
   </div>
 
   <!-- ── SETTINGS ── -->
@@ -901,8 +1090,8 @@
       <div class="settings-item">
         <div class="settings-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
         <div class="settings-item-info">
-          <div class="settings-item-label">Biblia Digital</div>
-          <div class="settings-item-sub">Versión 1.0 · Powered by Anthropic</div>
+          <div class="settings-item-label">Kor Bible</div>
+          <div class="settings-item-sub">Versión 1.1</div>
         </div>
       </div>
     </div>
@@ -932,6 +1121,10 @@
       <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       Biblia
     </button>
+    <button class="nav-item" id="nav-media" onclick="navigate('media')">
+      <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      Media
+    </button>
     <button class="nav-item" id="nav-search" onclick="navigate('search')">
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       Buscar
@@ -945,6 +1138,23 @@
       Ajustes
     </button>
   </nav>
+
+  <div class="mini-player" id="mini-player">
+    <div class="mini-player-icon" id="mini-player-icon">
+      <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    </div>
+    <div class="mini-player-info">
+      <div class="mini-player-title" id="mini-player-title">—</div>
+      <div class="mini-player-sub" id="mini-player-sub">—</div>
+    </div>
+    <button class="mini-player-btn" id="mini-player-toggle" onclick="toggleAudioPlay()">
+      <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    </button>
+    <button class="mini-player-btn" onclick="closeMiniPlayer()">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <audio id="audio-player" style="display:none"></audio>
 
   <div class="toast" id="toast"></div>
 </div>
@@ -1194,6 +1404,11 @@ const NEW_TESTAMENT = [
   { name: "Apocalipsis", abbr: "Apo", chapters: 22 }
 ];
 
+function getBookChapterCount(bookName) {
+  const found = OLD_TESTAMENT.find(b => b.name === bookName) || NEW_TESTAMENT.find(b => b.name === bookName);
+  return found ? found.chapters : 1;
+}
+
 const PLAN_DAYS = [
   { day: 1, title: "Introducción de Mateo", ref: "Mateo 1–2", done: true },
   { day: 2, title: "El Bautismo y Tentación", ref: "Mateo 3–4", done: true },
@@ -1234,7 +1449,7 @@ let currentScreen = 'home';
 let currentTestament = 0;
 let currentBook = null;
 let currentChapter = null;
-let fontSize = 'md';
+let fontSize = localStorage.getItem('bible_font_size') || 'md';
 let favorites = JSON.parse(localStorage.getItem('bible_favs') || '[]');
 let highlighted = JSON.parse(localStorage.getItem('bible_highlighted') || '[]');
 let activeVerse = null;
@@ -1251,13 +1466,18 @@ function navigate(screen) {
   if (screen === 'home') {
     document.getElementById('screen-home').classList.add('active');
     document.getElementById('nav-home').classList.add('active');
-    document.getElementById('topbar-title').textContent = 'Biblia Digital';
+    document.getElementById('topbar-title').textContent = 'Kor Bible';
     updateFavCountHome();
   } else if (screen === 'books') {
     document.getElementById('screen-books').classList.add('active');
     document.getElementById('nav-books').classList.add('active');
     document.getElementById('topbar-title').textContent = 'Biblia';
     renderBooks();
+  } else if (screen === 'media') {
+    document.getElementById('screen-media').classList.add('active');
+    document.getElementById('nav-media').classList.add('active');
+    document.getElementById('topbar-title').textContent = 'Media';
+    renderMedia();
   } else if (screen === 'search') {
     document.getElementById('screen-search').classList.add('active');
     document.getElementById('nav-search').classList.add('active');
@@ -1279,6 +1499,7 @@ function goToBooks() { navigate('books'); }
 function goToSearch() { navigate('search'); }
 function goToFavs() { navigate('favs'); }
 function goToSettings() { navigate('settings'); }
+function goToMedia() { navigate('media'); }
 
 function goToPlan() {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1479,6 +1700,7 @@ function backFromReader() {
 let searchTimeout;
 function handleSearch(val) {
   clearTimeout(searchTimeout);
+  document.querySelectorAll('#search-tags .search-tag').forEach(t => t.classList.remove('tag-active'));
   if (!val.trim()) {
     document.getElementById('search-results').innerHTML = `<div class="search-hint"><div class="search-hint-icon">📖</div><div class="search-hint-title">Busca en toda la Biblia</div><div class="search-hint-sub">Escribe una palabra o frase</div></div>`;
     return;
@@ -1486,8 +1708,10 @@ function handleSearch(val) {
   searchTimeout = setTimeout(() => doSearch(val), 300);
 }
 
-function quickSearch(term) {
+function quickSearch(term, el) {
   document.getElementById('search-input').value = term;
+  document.querySelectorAll('#search-tags .search-tag').forEach(t => t.classList.remove('tag-active'));
+  if (el) el.classList.add('tag-active');
   doSearch(term);
 }
 
@@ -1513,7 +1737,7 @@ function doSearch(query) {
     <div style="padding:10px 20px 4px;font-size:12px;color:var(--text-muted);">${results.length} resultado${results.length>1?'s':''}</div>
     <div class="search-results">
       ${results.map(r => `
-        <div class="search-result-item" onclick="openChapter('${r.book}', ${r.chapter}, 0)">
+        <div class="search-result-item" onclick="openChapter('${r.book}', ${r.chapter}, getBookChapterCount('${r.book}'))">
           <div class="search-result-ref">${r.book} ${r.chapter}:${r.verse}</div>
           <div class="search-result-text">${r.text.replace(re, '<mark>$1</mark>')}</div>
         </div>
@@ -1525,6 +1749,14 @@ function doSearch(query) {
 // ═══════════════════════════════════════════
 // FAVORITES
 // ═══════════════════════════════════════════
+function saveDailyVerseToFavs() {
+  const ref = document.getElementById('daily-ref').textContent.trim();
+  const text = document.getElementById('daily-verse').textContent.trim();
+  const match = ref.match(/^(.+)\s(\d+):(\d+)$/);
+  if (!match) { showToast('No se pudo guardar'); return; }
+  saveVerseToFavs(match[1], parseInt(match[2]), parseInt(match[3]), text);
+}
+
 function saveVerseToFavs(book, chapter, verse, text) {
   const idx = favorites.findIndex(f => f.book===book&&f.chapter===chapter&&f.verse==verse);
   if (idx < 0) {
@@ -1598,19 +1830,26 @@ function openPlanDay(day) { showToast(`Día ${day} del plan`); }
 function toggleTheme() {
   const app = document.getElementById('app');
   const isDark = app.getAttribute('data-theme') === 'dark';
-  app.setAttribute('data-theme', isDark ? 'light' : 'dark');
-  const toggle = document.getElementById('dark-toggle');
-  if (toggle) toggle.classList.toggle('on', !isDark);
+  setTheme(isDark ? 'light' : 'dark');
 }
 
 function toggleThemeFromSettings(btn) {
-  btn.classList.toggle('on');
   const app = document.getElementById('app');
-  app.setAttribute('data-theme', btn.classList.contains('on') ? 'dark' : 'light');
+  const isDark = app.getAttribute('data-theme') === 'dark';
+  setTheme(isDark ? 'light' : 'dark');
+}
+
+function setTheme(mode) {
+  const app = document.getElementById('app');
+  app.setAttribute('data-theme', mode);
+  localStorage.setItem('bible_theme', mode);
+  const toggle = document.getElementById('dark-toggle');
+  if (toggle) toggle.classList.toggle('on', mode === 'dark');
 }
 
 function setFontSize(size, el) {
   fontSize = size;
+  localStorage.setItem('bible_font_size', size);
   document.querySelectorAll('.font-size-option').forEach(o => o.classList.remove('active'));
   el.classList.add('active');
   const content = document.getElementById('reader-content');
@@ -1621,6 +1860,7 @@ const fontSizes = ['sm','md','lg','xl'];
 function cycleFont() {
   const idx = fontSizes.indexOf(fontSize);
   fontSize = fontSizes[(idx+1) % fontSizes.length];
+  localStorage.setItem('bible_font_size', fontSize);
   const content = document.getElementById('reader-content');
   if (content) content.setAttribute('data-size', fontSize);
   showToast(`Texto: ${fontSize==='sm'?'pequeño':fontSize==='md'?'normal':fontSize==='lg'?'grande':'extra grande'}`);
@@ -1640,9 +1880,225 @@ function shareDailyVerse() {
 }
 
 function shareChapter() {
-  const msg = `${currentBook} ${currentChapter} — Biblia Digital`;
+  const msg = `${currentBook} ${currentChapter} — Kor Bible`;
   if (navigator.share) navigator.share({ title: msg, text: msg });
   else showToast('Comparte: ' + msg);
+}
+
+// ═══════════════════════════════════════════
+// MEDIA: VIDEOS (YouTube) & AUDIO
+// ═══════════════════════════════════════════
+const FEATURED_VIDEOS = [
+  {
+    id: "1",
+    youtubeId: "hH3yQe0n0lI",
+    title: "Música cristiana de alabanza y adoración",
+    channel: "Alabanza y Adoración",
+    query: "musica cristiana de alabanza"
+  },
+  {
+    id: "2",
+    youtubeId: "lhhtFn-ulOQ",
+    title: "Prédica cristiana: viviendo en fe",
+    channel: "Prédicas Cristianas",
+    query: "predica cristiana"
+  },
+  {
+    id: "3",
+    youtubeId: "5qap5aO4i9A",
+    title: "Transmisión de iglesia en vivo",
+    channel: "Iglesia en Vivo",
+    query: "iglesia cristiana en vivo"
+  },
+  {
+    id: "4",
+    youtubeId: "8RtSCNCB6Vo",
+    title: "Estudio bíblico para principiantes",
+    channel: "Estudios Bíblicos",
+    query: "estudio biblico"
+  },
+  {
+    id: "5",
+    youtubeId: "0K7AGI2Mz9o",
+    title: "Testimonios de fe y vida cristiana",
+    channel: "Testimonios",
+    query: "testimonios cristianos"
+  }
+];
+
+const AUDIO_BIBLE_TRACKS = [
+  { id: "ab1", title: "Salmo 23 narrado", sub: "Audio Biblia · Salmos", dur: "2:10", src: "" },
+  { id: "ab2", title: "Juan 3 narrado", sub: "Audio Biblia · Juan", dur: "3:45", src: "" },
+  { id: "ab3", title: "Génesis 1 narrado", sub: "Audio Biblia · Génesis", dur: "4:02", src: "" }
+];
+
+const AUDIO_PODCAST_TRACKS = [
+  { id: "ap1", title: "Devocional matutino", sub: "Podcast cristiano diario", dur: "8:30", src: "" },
+  { id: "ap2", title: "Reflexión de la semana", sub: "Podcast cristiano", dur: "12:15", src: "" }
+];
+
+function selectMediaTab(tab, el) {
+  document.querySelectorAll('.media-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('media-videos').style.display = tab === 'videos' ? 'flex' : 'none';
+  document.getElementById('media-audio').style.display = tab === 'audio' ? 'flex' : 'none';
+  if (tab === 'audio') renderAudioLists();
+}
+
+function renderMedia() {
+  renderVideoList(FEATURED_VIDEOS);
+  renderAudioLists();
+}
+
+function renderVideoList(videos) {
+  const el = document.getElementById('video-list');
+  if (!videos.length) {
+    el.innerHTML = `<div class="search-hint"><div class="search-hint-icon">🎬</div><div class="search-hint-title">Sin resultados</div><div class="search-hint-sub">Intenta con otra búsqueda</div></div>`;
+    return;
+  }
+  el.innerHTML = videos.map(v => `
+    <div class="video-card" onclick="playVideo('${v.youtubeId}', '${(v.title||'').replace(/'/g,"\\'")}', '${(v.channel||'').replace(/'/g,"\\'")}')">
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg" alt="" loading="lazy" onerror="this.style.display='none'">
+        <div class="video-play-badge"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></div>
+      </div>
+      <div class="video-info">
+        <div class="video-title">${v.title}</div>
+        <div class="video-channel">
+          <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          ${v.channel}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function playVideo(youtubeId, title, channel) {
+  // Remove existing embed if present, then insert at top of panel
+  const existing = document.getElementById('video-embed-active');
+  if (existing) existing.remove();
+  const panel = document.getElementById('media-videos');
+  const div = document.createElement('div');
+  div.className = 'video-embed-wrap';
+  div.id = 'video-embed-active';
+  div.innerHTML = `
+    <div class="video-embed-frame">
+      <iframe src="https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0" title="${title.replace(/"/g,'&quot;')}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <div class="video-embed-title">${title}</div>
+    <div class="video-channel" style="margin-top:2px">
+      <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      ${channel}
+    </div>
+    <button class="video-embed-close" onclick="document.getElementById('video-embed-active').remove()">
+      <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      Cerrar video
+    </button>
+  `;
+  panel.insertBefore(div, panel.firstChild);
+  panel.scrollTop = 0;
+}
+
+function quickVideoSearch(term) {
+  document.getElementById('video-search-input').value = term;
+  searchYouTube(term);
+}
+
+function searchYouTube(term) {
+  const q = (term || '').trim();
+  if (!q) return;
+  // Filter the curated list by topic match, and always offer a direct YouTube search link
+  const filtered = FEATURED_VIDEOS.filter(v =>
+    v.title.toLowerCase().includes(q.toLowerCase()) ||
+    v.query.toLowerCase().includes(q.toLowerCase())
+  );
+  renderVideoList(filtered.length ? filtered : FEATURED_VIDEOS);
+  const el = document.getElementById('video-list');
+  const searchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q);
+  el.insertAdjacentHTML('afterbegin', `
+    <a href="${searchUrl}" target="_blank" rel="noopener" style="text-decoration:none">
+      <div class="video-card" style="display:flex;align-items:center;gap:12px;padding:14px;">
+        <div class="audio-item-icon" style="background:var(--coral);flex-shrink:0">
+          <svg viewBox="0 0 24 24" style="stroke:white"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <div style="flex:1">
+          <div class="video-title" style="margin-bottom:2px">Buscar "${q}" en YouTube</div>
+          <div class="video-channel">Abrir resultados completos</div>
+        </div>
+      </div>
+    </a>
+  `);
+}
+
+function renderAudioLists() {
+  const bibleEl = document.getElementById('audio-bible-list');
+  const podEl = document.getElementById('audio-podcast-list');
+  bibleEl.innerHTML = AUDIO_BIBLE_TRACKS.map(t => audioItemHTML(t)).join('');
+  podEl.innerHTML = AUDIO_PODCAST_TRACKS.map(t => audioItemHTML(t)).join('');
+}
+
+function audioItemHTML(t) {
+  return `
+    <div class="audio-item" id="audio-item-${t.id}" onclick="playAudio('${t.id}','${t.title.replace(/'/g,"\\'")}','${t.sub.replace(/'/g,"\\'")}')">
+      <div class="audio-item-icon" id="audio-icon-${t.id}">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      </div>
+      <div class="audio-item-info">
+        <div class="audio-item-title">${t.title}</div>
+        <div class="audio-item-sub">${t.sub}</div>
+      </div>
+      <div class="audio-item-dur">${t.dur}</div>
+    </div>
+  `;
+}
+
+let currentAudioId = null;
+function playAudio(id, title, sub) {
+  const allTracks = [...AUDIO_BIBLE_TRACKS, ...AUDIO_PODCAST_TRACKS];
+  const track = allTracks.find(t => t.id === id);
+  if (!track) return;
+
+  document.querySelectorAll('.audio-item-icon').forEach(i => i.classList.remove('playing'));
+  const icon = document.getElementById('audio-icon-' + id);
+  if (icon) icon.classList.add('playing');
+
+  currentAudioId = id;
+  document.getElementById('mini-player-title').textContent = title;
+  document.getElementById('mini-player-sub').textContent = sub;
+  document.getElementById('mini-player').classList.add('show');
+  setMiniPlayerIcon(true);
+
+  if (track.src) {
+    const audio = document.getElementById('audio-player');
+    audio.src = track.src;
+    audio.play().catch(() => {});
+  } else {
+    // No audio source bundled in this demo build — show a friendly note instead of failing silently
+    showToast('Vista previa: conecta tu fuente de audio para reproducir');
+  }
+}
+
+function toggleAudioPlay() {
+  const audio = document.getElementById('audio-player');
+  if (!audio.src) { showToast('Selecciona una pista de audio'); return; }
+  if (audio.paused) { audio.play().catch(()=>{}); setMiniPlayerIcon(true); }
+  else { audio.pause(); setMiniPlayerIcon(false); }
+}
+
+function setMiniPlayerIcon(playing) {
+  const toggle = document.getElementById('mini-player-toggle');
+  toggle.innerHTML = playing
+    ? `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`
+    : `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+}
+
+function closeMiniPlayer() {
+  const audio = document.getElementById('audio-player');
+  audio.pause();
+  audio.src = '';
+  document.getElementById('mini-player').classList.remove('show');
+  document.querySelectorAll('.audio-item-icon').forEach(i => i.classList.remove('playing'));
+  currentAudioId = null;
 }
 
 // ═══════════════════════════════════════════
@@ -1660,7 +2116,59 @@ function showToast(msg) {
 // ═══════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════
-updateFavCountHome();
+(function initApp() {
+  // Apply saved theme
+  const savedTheme = localStorage.getItem('bible_theme') || 'light';
+  setTheme(savedTheme);
+
+  // Apply saved font size and sync the settings UI
+  const sizeMap = { sm: 0, md: 1, lg: 2, xl: 3 };
+  const options = document.querySelectorAll('.font-size-option');
+  options.forEach(o => o.classList.remove('active'));
+  if (options[sizeMap[fontSize]]) options[sizeMap[fontSize]].classList.add('active');
+
+  updateFavCountHome();
+  pickDailyVerse();
+})();
+
+// ═══════════════════════════════════════════
+// DAILY VERSE ROTATION
+// ═══════════════════════════════════════════
+const DAILY_VERSE_POOL = [
+  { book: "Juan", chapter: 3, verse: 16 },
+  { book: "Salmos", chapter: 23, verse: 1 },
+  { book: "Salmos", chapter: 91, verse: 1 },
+  { book: "Filipenses", chapter: 4, verse: 13 },
+  { book: "Filipenses", chapter: 4, verse: 7 },
+  { book: "Isaías", chapter: 40, verse: 31 },
+  { book: "Romanos", chapter: 8, verse: 28 },
+  { book: "Proverbios", chapter: 3, verse: 5 },
+  { book: "Salmos", chapter: 1, verse: 3 },
+  { book: "Romanos", chapter: 8, verse: 37 }
+];
+
+function pickDailyVerse() {
+  // Same verse all day (based on day-of-year), changes automatically tomorrow
+  const today = new Date();
+  const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+  const pick = DAILY_VERSE_POOL[dayOfYear % DAILY_VERSE_POOL.length];
+  const text = bibleData[pick.book] && bibleData[pick.book][pick.chapter] && bibleData[pick.book][pick.chapter][pick.verse];
+  if (!text) return; // keep the default verse already in the HTML if not in sample data
+  document.getElementById('daily-ref').textContent = `${pick.book} ${pick.chapter}:${pick.verse}`;
+  document.getElementById('daily-verse').textContent = text;
+  document.getElementById('daily-verse').setAttribute('data-book', pick.book);
+  document.getElementById('daily-verse').setAttribute('data-chapter', pick.chapter);
+  document.getElementById('daily-verse').setAttribute('data-verse', pick.verse);
+}
+
+function randomVerse() {
+  const pick = DAILY_VERSE_POOL[Math.floor(Math.random() * DAILY_VERSE_POOL.length)];
+  const text = bibleData[pick.book] && bibleData[pick.book][pick.chapter] && bibleData[pick.book][pick.chapter][pick.verse];
+  if (!text) { showToast('Probemos otra vez'); return; }
+  document.getElementById('daily-ref').textContent = `${pick.book} ${pick.chapter}:${pick.verse}`;
+  document.getElementById('daily-verse').textContent = text;
+  showToast('Nuevo versículo ✨');
+}
 </script>
 </body>
 </html>
